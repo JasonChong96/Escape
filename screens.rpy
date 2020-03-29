@@ -6,6 +6,7 @@ init offset = -1
 init python:
     def clear_data():
         persistent._clear(progress=True)
+        persistent.total_playtime = 0
     def silhouette_matrix (r,g,b,a=1.0):
         return im.matrix((0, 0, 0, 0, r,
                         0, 0, 0, 0, g,
@@ -1572,10 +1573,10 @@ screen attic_options(is_balcony_label_visible=False):
         xpos 1550 ypos 25
     imagebutton:
         idle im.Alpha(attic_blanket_image, 0.8)
-        focus_mask True
         hover attic_blanket_image
         action Return('attic.blanket')
         hovered mtt.TextAction("Blanket")
+        focus_mask True
         xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
@@ -1600,13 +1601,15 @@ screen balcony_options():
         hover balcony_plants_image
         action Return('balcony.plants')
         hovered mtt.TextAction("Flower Pot")
-        xpos 350 ypos 200
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(baygon_image, 0.8)
         hover baygon_image
         action Return('balcony.baygon')
         hovered mtt.TextAction("Can")
-        xpos 1100 ypos 550
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_right, 0.8)
         hover arrow_right
@@ -1627,7 +1630,8 @@ screen hallway_options(wardrobe_label_visible=False,
             hovered mtt.TextAction("Wardrobe")
         else:
             hovered mtt.TextAction("Door")
-        xpos 150 ypos 200
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(hallway_door_2_image, 0.8)
         hover hallway_door_2_image
@@ -1636,7 +1640,8 @@ screen hallway_options(wardrobe_label_visible=False,
             hovered mtt.TextAction("Master Bedroom")
         else:
             hovered mtt.TextAction("Door")
-        xpos 600 ypos 200
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(hallway_door_3_image, 0.8)
         hover hallway_door_3_image
@@ -1645,7 +1650,8 @@ screen hallway_options(wardrobe_label_visible=False,
             hovered mtt.TextAction("Monsters' Den")
         else:
             hovered mtt.TextAction("Door")
-        xpos 1000 ypos 200
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(hallway_door_4_image, 0.8)
         hover hallway_door_4_image
@@ -1654,7 +1660,8 @@ screen hallway_options(wardrobe_label_visible=False,
             hovered mtt.TextAction("Toilet")
         else:
             hovered mtt.TextAction("Door")
-        xpos 1300 ypos 200
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1669,20 +1676,23 @@ screen toilet_options(is_poison_visible=True):
         hover toilet_mirror_image
         action Return('toilet.mirror')
         hovered mtt.TextAction("Mirror")
-        xpos 1450 ypos 10
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(toilet_puddle_image, 0.8)
         hover toilet_puddle_image
         action Return('toilet.puddle')
         hovered mtt.TextAction("Puddle")
-        xpos 700 ypos 900
+        focus_mask True
+        xpos 0 ypos 0
     if is_poison_visible:
         imagebutton:
             idle im.Alpha(toilet_poison_image, 0.8)
             hover toilet_poison_image
             action Return('toilet.poison')
             hovered mtt.TextAction("??")
-            xpos 1600 ypos 600
+            focus_mask True
+            xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1695,23 +1705,25 @@ screen toilet_options(is_poison_visible=True):
 screen dogroom_options(is_dogtoy_visible=False):
     imagebutton:
         idle dogroom_bed_image
-        xpos -300 ypos 300
+        xpos 0 ypos 0
     if is_dogtoy_visible:
         imagebutton:
             idle im.Alpha(dogroom_toy_image, 0.8)
             hover dogroom_toy_image
             action Return('dogroom.toy')
             hovered mtt.TextAction("Bone")
-            xpos 700 ypos 600
+            focus_mask True
+            xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(dogroom_poop_image, 0.8)
         hover dogroom_poop_image
         action Return('dogroom.poop')
         hovered mtt.TextAction("Brown Thing")
-        xpos 900 ypos 800
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle dogroom_cage_image
-        xpos 1100 ypos 300
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1726,20 +1738,22 @@ screen master_bedroom_options(is_wardrobe_label_visible=False):
         hover master_bedroom_roomba_image
         action Return('master_bedroom.roomba')
         hovered mtt.TextAction("Circular thingamaji")
-        xpos 50 ypos 650
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(master_bedroom_lamp_image, 0.8)
         hover master_bedroom_lamp_image
         action Return('master_bedroom.lamp')
         hovered mtt.TextAction("Lamp")
         focus_mask True
-        xpos 1300 ypos 25
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(master_bedroom_socket_image, 0.8)
         hover master_bedroom_socket_image
         action Return('master_bedroom.socket')
         hovered mtt.TextAction("Socket")
-        xpos 1700 ypos 500
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1763,20 +1777,23 @@ screen wardrobe_options(is_ring_visible=True):
         hover wardrobe_laundry_image
         action Return('wardrobe.clothes')
         hovered mtt.TextAction("Clothes")
-        xpos -100 ypos 500
+        focus_mask True
+        xpos 0 ypos 0
     if is_ring_visible:
         imagebutton:
             idle im.Alpha(wardrobe_ring_image, 0.8)
             hover wardrobe_ring_image
             action Return('wardrobe.ring')
             hovered mtt.TextAction("Sparkling thing")
-            xpos 1200 ypos 800
+            focus_mask True
+            xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(wardrobe_shoes_image, 0.8)
         hover wardrobe_shoes_image
         action Return('wardrobe.shoes')
         hovered mtt.TextAction("Shoes")
-        xpos 600 ypos 600
+        focus_mask True
+        xpos 0 ypos 0
     # imagebutton:
     #     idle im.Alpha(arrow_left, 0.8)
     #     hover arrow_left
@@ -1798,19 +1815,21 @@ screen kitchen_options():
         action Return('kitchen.trashcan')
         hovered mtt.TextAction("Trashcan")
         focus_mask True
-        xpos 1200 ypos 200
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(kitchen_dishes_image, 0.8)
         hover kitchen_dishes_image
         action Return('kitchen.dishes')
         hovered mtt.TextAction("Dirty Dishes")
-        xpos 900 ypos -80
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(kitchen_water_image, 0.8)
         hover kitchen_water_image
         action Return('kitchen.water')
         hovered mtt.TextAction("Water")
-        xpos 730 ypos 95
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1826,26 +1845,30 @@ screen dining_room_options(is_leftovers_visible=True, is_fresh_food_visible=True
             hover dining_room_leftovers_image
             action Return('dining_room.leftovers')
             hovered mtt.TextAction("Food")
-            xpos 100 ypos 400
+            focus_mask True
+            xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(dining_room_cockroaches_image, 0.8)
         hover dining_room_cockroaches_image
         action Return('dining_room.cockroaches')
         hovered mtt.TextAction("Under dining table")
-        xpos 1150 ypos 800
+        focus_mask True
+        xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(dining_room_cutleries_image, 0.8)
         hover dining_room_cutleries_image
         action Return('dining_room.cutlery')
         hovered mtt.TextAction("Cutleries")
-        xpos 1050 ypos 66
+        focus_mask True
+        xpos 0 ypos 0
     if is_fresh_food_visible:
         imagebutton:
             idle im.Alpha(dining_room_food_image, 0.8)
             hover dining_room_food_image
             action Return('dining_room.food')
             hovered mtt.TextAction("Food")
-            xpos 1300 ypos 105
+            focus_mask True
+            xpos 0 ypos 0
     imagebutton:
         idle im.Alpha(arrow_right, 0.8)
         hover arrow_right

@@ -22,6 +22,7 @@ init:
 
 
 init python:
+    import time
     dirt_actions_left = -1
     pee_actions_left = -1
     currentuser = ""
@@ -32,6 +33,35 @@ init python:
                 currentuser = user
     except:
         pass
+
+    # Create an object to store the last time playtime was updated.
+    # Since we create it in init, it won't be saved or participate
+    # in rollback.
+    playtime = object()
+    playtime.last_update = time.time()
+
+    # Store the total playtime in persistent.total_playtime.
+    if persistent.total_playtime is None:
+        persistent.total_playtime = 0
+
+    # This is called periodically (several times a second) to update
+    # persistent.total_playtime.
+    def playtime_callback():
+        now = time.time()
+        delta = now - playtime.last_update
+        persistent.total_playtime += delta
+        playtime.last_update = now
+
+    config.periodic_callbacks.append(playtime_callback)
+    def clear_data():
+        persistent._clear(progress=True)
+        persistent.total_playtime = 0
+
+    def get_playtime():
+        seconds = persistent.total_playtime
+        minutes, seconds = int(seconds // 60), int(seconds % 60)
+        return str(minutes) + " minutes " + str(seconds) + " seconds"
+
     def dirt_check():
         global dirt_actions_left
         if dirt_actions_left < 0:
@@ -94,7 +124,7 @@ label start:
     image bg outside = im.Scale("bg outside.png", 1920, 1080)
     image dog toy = im.FactorScale("dog toy.png", 0.075, 0.075)
     image poop = im.FactorScale("poop.png", 1, 1)
-    image dog2 = im.FactorScale("dog2.png", 0.5, 0.5)
+    image dog2 = im.FactorScale("dog2.png", 1, 1)
     # Show a background. This uses a placeholder by default, but you can
     # add a file (named either "bg room.png" or "bg room.jpg") to the
     # images directory to show it.
@@ -116,6 +146,12 @@ label start:
         scene babyroom with fade
         stop sound fadeout 1.0
         show babyroom
+        if persistent.hallway_ground_entered:
+            "I know the way to the 1st floor now so I should head there directly!"
+            jump hallway_ground
+        if persistent.hallway_entered:
+            "I know the way to the 2nd floor now so I should head there directly!"
+            jump hallway
         $ action_taken()
         $ persistent.babyroom_entered = True
         call screen babyroom_options(not persistent.babyroom_ate_food, persistent.babyroom_can_exit, persistent.attic_entered, not persistent.rat_dead)
@@ -643,7 +679,7 @@ label start:
                 else:
                     "*Sneakily inch closer*"
                     play sound "audio/dog snoring.ogg"
-                    show dog2 at Position(xpos=0.5, ypos=0.8)
+                    show dog2 at Position(xpos=0.5, ypos=0.95)
                     $ persistent.living_room_front_door_discovered = True
                     "Argh, another monster. At this rate, I’m doomed to be stuck here, how do I even escape??"
                     "I need to create a distraction."
@@ -672,7 +708,9 @@ label start:
         f "Oh baby, you fell asleep at the doorstep! Playtime is over, it’s time for your shower."
         "Nooo.. Please don’t put me in the shower :("
         scene bg ending caught with fade
-        ""
+        $ timing = get_playtime()
+        "Congratulations you took [timing] to reach the first ending! Your game will be reset"
+        $ clear_data()
         return
 
     label ending_food_coma_2:
@@ -685,7 +723,9 @@ label start:
         f "Oh baby, how did you open the door! You’re very smart but playtime is over, it’s time for your shower."
         "Nooo.. Please don’t put me in the shower :("
         scene bg ending caught with fade
-        ""
+        $ timing = get_playtime()
+        "Congratulations you took [timing] to reach the second ending! Your game will be reset"
+        $ clear_data()
         return
 
     label ending_true:
@@ -701,7 +741,9 @@ label start:
         scene black with fade
         "Nooo.. Please don’t put me in the shower :("
         scene bg ending caught with fade
-        ""
+        $ timing = get_playtime()
+        "Congratulations you took [timing] to reach the TRUE ending! Your game will be reset"
+        $ clear_data()
         return
 
 
