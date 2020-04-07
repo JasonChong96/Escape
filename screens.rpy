@@ -373,9 +373,14 @@ screen main_menu():
     use navigation
 
     if gui.show_name:
-
+        python:
+            game_name = config.name
+            if persistent.num_caught == 1:
+                game_name = "Caught"
+            elif persistent.num_caught >= 2:
+                game_name = "Caught Again"
         vbox:
-            text "[config.name!t]":
+            text "[game_name!t]":
                 style "main_menu_title"
 
             text "[config.version]":
@@ -1514,7 +1519,7 @@ style slider_pref_slider:
 
 default mtt = MouseTooltip(Text(""), padding={"x": 30, "y": -10})
 
-screen babyroom_options(is_food_visible=True, is_exit_visible=False, is_exit_labelled=False, is_rat_visible=True):
+screen babyroom_options(is_food_visible=True, is_exit_labelled=False):
     imagebutton:
         idle im.Alpha(toys_image, 0.8)
         hover toys_image
@@ -1537,27 +1542,18 @@ screen babyroom_options(is_food_visible=True, is_exit_visible=False, is_exit_lab
         hovered mtt.TextAction("Cot")
         focus_mask True
         xpos 0 ypos 0
-    if is_rat_visible:
-        imagebutton:
-            idle im.Alpha(live_rat_image, 0.8)
-            hover live_rat_image
-            action Return('babyroom.rat')
-            focus_mask True
-            hovered mtt.TextAction("Friend")
-            xpos 750 ypos 750
-    if is_exit_visible:
-        imagebutton:
-            idle im.Alpha(arrow_left, 0.8)
-            hover arrow_left
-            action Return('babyroom.exit')
-            if is_exit_labelled:
-                hovered mtt.TextAction("Attic")
-            else:
-                hovered mtt.TextAction("Go out")
-            xpos 0 ypos 0
+    imagebutton:
+        idle im.Alpha(arrow_left, 0.8)
+        hover arrow_left
+        action Return('babyroom.exit')
+        if is_exit_labelled:
+            hovered mtt.TextAction("Hallway")
+        else:
+            hovered mtt.TextAction("Go out")
+        xpos 0 ypos 0
     add mtt
 
-screen attic_options(is_balcony_label_visible=False):
+screen attic_options(is_balcony_label_visible=False, is_dogroom_label_visible=False):
     imagebutton:
         idle im.Alpha(attic_curtain_image, 0.8)
         hover attic_curtain_image
@@ -1572,12 +1568,12 @@ screen attic_options(is_balcony_label_visible=False):
         hovered mtt.TextAction("Photos")
         xpos 1550 ypos 25
     imagebutton:
-        idle im.Alpha(attic_blanket_image, 0.8)
-        hover attic_blanket_image
+        idle im.Alpha(attic_stairs_image, 0.8)
+        hover attic_stairs_image
         action Return('attic.blanket')
-        hovered mtt.TextAction("Blanket")
+        hovered mtt.TextAction("Stairs")
         focus_mask True
-        xpos 0 ypos 0
+        xpos 1000 ypos 0
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1590,9 +1586,12 @@ screen attic_options(is_balcony_label_visible=False):
     imagebutton:
         idle im.Alpha(arrow_right, 0.8)
         hover arrow_right
-        action Return('attic.babyroom')
-        hovered mtt.TextAction("Baby room")
-        xpos 1500 ypos 400
+        action Return('attic.dogroom')
+        if is_dogroom_label_visible:
+            hovered mtt.TextAction("Monsters' Den")
+        else:
+            hovered mtt.TextAction("Head Right")
+        xpos 1500 ypos 800
     add mtt
 
 screen balcony_options():
@@ -1620,8 +1619,9 @@ screen balcony_options():
 
 screen hallway_options(wardrobe_label_visible=False,
                        master_bedroom_label_visible=False,
-                       dog_room_label_visible=False,
-                       toilet_label_visible=False):
+                       baby_room_label_visible=False,
+                       toilet_label_visible=False,
+                       attic_label_visible=False):
     imagebutton:
         idle im.Alpha(hallway_door_1_image, 0.8)
         hover hallway_door_1_image
@@ -1645,9 +1645,9 @@ screen hallway_options(wardrobe_label_visible=False,
     imagebutton:
         idle im.Alpha(hallway_door_3_image, 0.8)
         hover hallway_door_3_image
-        action Return('hallway.dog_room')
-        if dog_room_label_visible:
-            hovered mtt.TextAction("Monsters' Den")
+        action Return('hallway.babyroom')
+        if baby_room_label_visible:
+            hovered mtt.TextAction("Baby Room")
         else:
             hovered mtt.TextAction("Door")
         focus_mask True
@@ -1668,9 +1668,18 @@ screen hallway_options(wardrobe_label_visible=False,
         action Return('hallway.stairs')
         hovered mtt.TextAction("Go downstairs")
         xpos 0 ypos 800
+    imagebutton:
+        idle im.Alpha(arrow_right, 0.8)
+        hover arrow_right
+        action Return('hallway.attic')
+        if attic_label_visible:
+            hovered mtt.TextAction("To Attic")
+        else:
+            hovered mtt.TextAction("Go upstairs")
+        xpos 1500 ypos 0
     add mtt
 
-screen toilet_options(is_poison_visible=True):
+screen toilet_options(is_rat_visible=True):
     imagebutton:
         idle im.Alpha(toilet_mirror_image, 0.8)
         hover toilet_mirror_image
@@ -1685,14 +1694,21 @@ screen toilet_options(is_poison_visible=True):
         hovered mtt.TextAction("Puddle")
         focus_mask True
         xpos 0 ypos 0
-    if is_poison_visible:
+    imagebutton:
+        idle im.Alpha(toilet_poison_image, 0.8)
+        hover toilet_poison_image
+        action Return('toilet.poison')
+        hovered mtt.TextAction("??")
+        focus_mask True
+        xpos 0 ypos 0
+    if is_rat_visible:
         imagebutton:
-            idle im.Alpha(toilet_poison_image, 0.8)
-            hover toilet_poison_image
-            action Return('toilet.poison')
-            hovered mtt.TextAction("??")
+            idle im.Alpha(live_rat_image, 0.8)
+            hover live_rat_image
+            action Return('toilet.rat')
             focus_mask True
-            xpos 0 ypos 0
+            hovered mtt.TextAction("Friend")
+            xpos 750 ypos 750
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
@@ -1727,8 +1743,8 @@ screen dogroom_options(is_dogtoy_visible=False):
     imagebutton:
         idle im.Alpha(arrow_left, 0.8)
         hover arrow_left
-        action Return('dogroom.hallway')
-        hovered mtt.TextAction("Hallway")
+        action Return('dogroom.attic')
+        hovered mtt.TextAction("attic")
         xpos 0 ypos 800
     add mtt
 
@@ -1883,5 +1899,70 @@ screen ending_options():
         hover ending_door_image
         action Return('ending.door')
         hovered mtt.TextAction("ESCAPE")
-        xpos 500 ypos -50
+        xpos 500 ypos 100
+    add mtt
+
+screen hallway_ground_options(is_kitchen_label_visible=False,
+                              is_dining_room_label_visible=False,
+                              is_living_room_label_visible=False,
+                              is_rat_dead=False,
+                              is_rat_name_visible=False):
+    imagebutton:
+        idle im.Alpha(hallway_ground_door_1_image, 0.8)
+        hover hallway_ground_door_1_image
+        action Return('hallway_ground.dining_room')
+        if is_dining_room_label_visible:
+            hovered mtt.TextAction("Dining Room")
+        else:
+            hovered mtt.TextAction("Door")
+        focus_mask True
+        xpos -100 ypos -95
+    imagebutton:
+        idle im.Alpha(hallway_ground_door_2_image, 0.8)
+        hover hallway_ground_door_2_image
+        action Return('hallway_ground.living_room')
+        if is_living_room_label_visible:
+            hovered mtt.TextAction("Living Room")
+        else:
+            hovered mtt.TextAction("Door")
+        focus_mask True
+        xpos 450 ypos -145
+    imagebutton:
+        idle im.Alpha(hallway_ground_door_3_image, 0.8)
+        hover hallway_ground_door_3_image
+        action Return('hallway_ground.kitchen')
+        if is_kitchen_label_visible:
+            hovered mtt.TextAction("Kitchen")
+        else:
+            hovered mtt.TextAction("Door")
+        focus_mask True
+        xpos 1000 ypos -150
+    imagebutton:
+        idle im.Alpha(arrow_left, 0.8)
+        hover arrow_left
+        hovered mtt.TextAction("2nd Floor")
+        action Return('hallway_ground.hallway')
+        xpos 100 ypos 850
+    if is_rat_dead:
+        imagebutton:
+            idle im.Alpha(hallway_ground_dead_rat_image, 0.8)
+            hover hallway_ground_dead_rat_image
+            action Return('hallway_ground.rat')
+            if is_rat_name_visible:
+                hovered mtt.TextAction("Russell")
+            else:
+                hovered mtt.TextAction("Rat")
+            focus_mask True
+            xpos 1200 ypos 700
+    else:
+        imagebutton:
+            idle im.Alpha(hallway_ground_live_rat_image, 0.8)
+            hover hallway_ground_live_rat_image
+            action Return('hallway_ground.rat')
+            if is_rat_name_visible:
+                hovered mtt.TextAction("Russell")
+            else:
+                hovered mtt.TextAction("Rat")
+            focus_mask True
+            xpos 400 ypos 600
     add mtt

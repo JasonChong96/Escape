@@ -8,7 +8,7 @@ define live_rat_image = im.FactorScale('live rat.png', 0.4)
 
 define attic_curtain_image = im.FactorScale('attic curtains.png', 1)
 define attic_photos_image = im.FactorScale('attic photos.png', 0.6)
-define attic_blanket_image = im.FactorScale('attic blanket.png', 1)
+define attic_stairs_image = im.FactorScale('attic stairs.png', 1)
 
 define balcony_plants_image = im.FactorScale('balcony plants.png', 1)
 define baygon_image = im.FactorScale('baygon.png', 1)
@@ -44,4 +44,10 @@ define dining_room_cockroaches_image = im.FactorScale("cockroaches.png", 1)
 define dining_room_cutleries_image = im.FactorScale("cutleries.png", 1)
 define dining_room_food_image = im.FactorScale("freshfood.png", 1)
 
-define ending_door_image = im.FactorScale("ending door.png", 0.8)
+define hallway_ground_door_1_image = im.FactorScale('hallway_ground_door_1.png', 0.75)
+define hallway_ground_door_2_image = im.FactorScale('hallway_ground_door_2.png', 2.65)
+define hallway_ground_door_3_image = im.FactorScale('hallway_ground_door_3.png', 2.65)
+define hallway_ground_live_rat_image = im.FactorScale("live rat.png", 0.5)
+define hallway_ground_dead_rat_image = im.FactorScale("deadrat.png", 0.4)
+
+define ending_door_image = im.FactorScale("ending door.png", 0.5)

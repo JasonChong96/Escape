@@ -140,8 +140,6 @@ label start:
     python:
         if persistent.eaten is None:
             persistent.eaten = set()
-        if persistent.num_caught is None:
-            persistent.num_caught = 0
     nameless_nvl """
     Looks like the coast is clear….
     """
@@ -151,8 +149,7 @@ label start:
     nvl clear
     # "Oh no, oh no, oh no. They know I’m here. "
     play music "audio/bgm.ogg"
-    "You are stuck in this house, and your objective is to get out."
-    "There are items along the way that you can interact with to help you on your journey. Try not to get caught!"
+
     jump toilet
 
     label babyroom:
@@ -190,7 +187,6 @@ label start:
             show caught at top
             "You got caught!"
             "But wait… what! Argh, not again! I can’t believe I got distracted that quickly…"
-            $ persistent.num_caught += 1
             return
         elif _return == 'babyroom.cot':
             $ persistent.babyroom_can_exit = True
@@ -233,6 +229,9 @@ label start:
                 "No":
                     jump attic
         elif _return == 'attic.dogroom':
+            if persistent.dog_room_toy_examined:
+                "The monster is sleeping in there..."
+                jump hallway
             jump dogroom
         elif _return == 'attic.balcony':
             jump balcony
@@ -338,7 +337,6 @@ label start:
                         show caught at top
                         "Wait, no, what?"
                         "How did I not hear him come in? I have failed myself, yet again."
-                        $ persistent.num_caught += 1
                         return
                     "No":
                         "Looks like a bottle from hell anyways..."
@@ -350,7 +348,6 @@ label start:
             "Wait, no, what?"
             "How did I not hear him come in? I have failed myself, yet again."
             $ persistent.toilet_ate_poison = True
-            $ persistent.num_caught += 1
             return
         elif _return == 'toilet.hallway':
             jump hallway
@@ -374,9 +371,6 @@ label start:
         $ action_taken()
         if not persistent.dog_room_entered:
             "Judging from the smell, I believe this is where the monsters live."
-        if persistent.dog_room_toy_examined:
-            "Wait... The monster is sleeping in here, time to get out."
-            jump attic
         $ persistent.dog_room_entered = True
         call screen dogroom_options(persistent.stairs_entered)
         if _return == 'dogroom.attic':
@@ -437,7 +431,6 @@ label start:
                         show caught at top
                         "You got caught!"
                         "Why am I so careless?"
-                        $ persistent.num_caught += 1
                         return
                     "No":
                         "Like I said, they are fragile. Maybe I’m better off leaving them alone."
@@ -453,7 +446,6 @@ label start:
                 "You got caught!"
                 "Why am I so careless?"
                 $ persistent.wardrobe_shoes_examined = True
-                $ persistent.num_caught += 1
                 return
         elif _return == 'wardrobe.ring':
             if persistent.wardrobe_jewellery_looked:
@@ -468,7 +460,6 @@ label start:
                         "You got caught!"
                         $ persistent.wardrobe_jewellery_looked = True
                         "What... How did they know I’m here? No, no, NO! LET ME GO!"
-                        $ persistent.num_caught += 1
                         return
                     "No":
                         "On second thought, maybe it’s not such a good idea. "
@@ -483,7 +474,6 @@ label start:
                 "You got caught!"
                 $ persistent.wardrobe_jewellery_looked = True
                 "What... How did they know I’m here? No, no, NO! LET ME GO!"
-                $ persistent.num_caught += 1
                 return
         elif _return == 'wardrobe.clothes':
             if persistent.wardrobe_clothes_caught:
@@ -496,7 +486,6 @@ label start:
                         "You got caught!"
                         $ persistent.wardrobe_clothes_caught = True
                         "I made too much noise out of panic. I must be quiet if I want to escape."
-                        $ persistent.num_caught += 1
                         return
                     "No":
                         "Yeah, doesn’t look like such a good idea either. Now, back to escaping."
@@ -512,7 +501,6 @@ label start:
                 "You got caught!"
                 $ persistent.wardrobe_clothes_caught = True
                 "I made too much noise out of panic. I must be quiet if I want to escape."
-                $ persistent.num_caught += 1
                 return
         jump wardrobe
 
@@ -546,7 +534,6 @@ label start:
             "The humans pulled me away so aggressively???"
             "I don’t understand, but I need to think of a new plan this time..."
             $ persistent.master_bedroom_socket_touched = True
-            $ persistent.num_caught += 1
             return
         elif _return == 'master_bedroom.lamp':
             if 'candy' in persistent.eaten:
@@ -584,7 +571,6 @@ label start:
                     show caught at top
                     'You got caught!'
                     "Oh well… It seems the humans are smarter than the monsters..."
-                    $ persistent.num_caught += 1
                     return
                 "Go back to hallway":
                     scene bg hallway with fade
@@ -593,7 +579,6 @@ label start:
                     show caught at top
                     'You got caught!'
                     "I. Am. An. Idiot. Sandwich. How did I get caught again…."
-                    $ persistent.num_caught += 1
                     return
                 "Enter the other door" if not persistent.master_bedroom_other_door_entered:
                     $ persistent.master_bedroom_other_door_entered = True
@@ -627,8 +612,6 @@ label start:
             jump dining_room
         elif _return == "hallway_ground.living_room":
             jump living_room
-        elif _return == "hallway_ground.hallway":
-            jump hallway
         elif _return == "hallway_ground.rat":
             if not persistent.is_rat_dead and persistent.knows_rat:
                 "It’s that rat from before… isn’t he supposed to be hiding? Let’s go ask him."
@@ -642,7 +625,6 @@ label start:
                 show live rat at top
                 "Oh dear..."
                 $ persistent.is_rat_dead = True
-                $ persistent.num_caught += 1
                 return
             elif not persistent.is_rat_dead and not persistent.knows_rat:
                 "It’s that rat from before… isn’t he supposed to be hiding? Let’s go ask him."
@@ -656,7 +638,6 @@ label start:
                 show live rat at top
                 "What have I done..."
                 $ persistent.is_rat_dead = True
-                $ persistent.num_caught += 1
                 return
             else:
                 "It’s that rat from before… isn’t he supposed to be hiding? Let’s go ask him."
@@ -695,7 +676,6 @@ label start:
             show caught at top
             "You got caught!"
             "Not again! Sigh..."
-            $ persistent.num_caught += 1
             return
         elif _return == 'dining_room.leftovers':
             if persistent.dining_room_leftover_eaten:
@@ -710,7 +690,6 @@ label start:
                 show caught at top
                 "You got caught!"
                 "Huh? What? Argh, it’s always me greed that kills me…."
-                $ persistent.num_caught += 1
                 return
         elif _return == 'dining_room.food':
             "*Eating freshly cooked food*"
@@ -784,7 +763,6 @@ label start:
 
     label ending:
         scene black with fade
-        $ mtt.TextAction("").__call__()
         narratorz "Hello there, finally you’re almost out!"
         menu:
             narratorz "We’re just curious and we hope you’d share with us, in your honest opinion, who do you think you’re playing as?"
@@ -823,8 +801,6 @@ label start:
         "Nooo.. Please don’t put me in the shower :("
         stop music
         scene bg ending caught with fade
-        stop music
-        stop sound
         $ timing = get_playtime()
         "Congratulations you took [timing] to reach the first ending! Your game will be reset"
         $ clear_data()
@@ -842,8 +818,6 @@ label start:
         f "Oh baby, how did you open the door! You’re very smart but playtime is over, it’s time for your shower."
         "Nooo.. Please don’t put me in the shower :("
         scene bg ending caught with fade
-        stop music
-        stop sound
         $ timing = get_playtime()
         "Congratulations you took [timing] to reach the second ending! Your game will be reset"
         $ clear_data()
@@ -862,7 +836,6 @@ label start:
         scene black with fade
         "Nooo.. Please don’t put me in the shower :("
         stop music
-        stop sound
         scene bg ending caught with fade
         $ timing = get_playtime()
         "Congratulations you took [timing] to reach the TRUE ending! Your game will be reset"
@@ -882,7 +855,7 @@ label start:
         menu:
             "Now’s the time to escape!"
             "Go back to living room":
-                call ending from _call_ending
+                call ending
                 $ MainMenu(confirm=False)()
 
 
@@ -892,7 +865,6 @@ label start:
         show caught at top
         "YOU GOT CAUGHT!"
         "Not so simple right? Try again."
-        $ persistent.num_caught += 1
         return
     # This ends the game.
 
