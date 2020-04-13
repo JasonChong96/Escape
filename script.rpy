@@ -1,25 +1,21 @@
 ﻿# The script of the game goes in this file.
 
-# Declare characters used by this game. The color argument colorizes the
-# name of the character.
+# Sorry for the mess but it works.
 
 define e = Character("Eileen")
 
 
 
 init:
-    $ config.developer = True
     $ config.rollback_enabled = False
     $ config.keymap['skip'].clear()
     $ config.keymap['game_menu'].clear()
     $ screen_center = Position(xpos=0.2, ypos=0.2)
-    $ config.debug_sound = True
     define m = Character('Man', color="#c8c8ff")
     define f = Character('Woman', color="#c8c8ff")
     define narratorz = Character('Narrator', color="#c8c8ff")
     define nameless_nvl = Character('', kind=nvl, color="#c8c8ff", what_text_align=0.5, what_xalign=0.5, what_yalign=0.2)
     define rat = Character('Russell', color="#c8c8ff")
-
 
 init python:
     import time
@@ -83,16 +79,7 @@ init python:
             renpy.say(None, "Oh my, I need to pee. It must be the water I drank just now…")
             renpy.jump('caught')
 
-    def action_taken():
-        mtt.TextAction("").__call__()
-        if persistent.living_room_front_door_unlocked:
-            return
-        dirt_check()
-        pee_check()
-        renpy.sound.stop()
-
-    def ground_floor_action_taken():
-        # pass
+    def ingame_clock_move():
         if not persistent.living_room_front_door_discovered:
             return
         if persistent.num_ground_floor_actions is None:
@@ -100,9 +87,41 @@ init python:
         persistent.num_ground_floor_actions += 1
         if persistent.num_ground_floor_actions >= 15 and not persistent.living_room_front_door_unlocked:
             renpy.call('front_door_open')
+
+    def action_taken():
+        mtt.TextAction("").__call__()
+        if persistent.living_room_front_door_unlocked:
+            return
+        dirt_check()
+        pee_check()
+        ingame_clock_move()
+        renpy.sound.stop()
+
+    def get_in_game_clock_time():
+        action_count = persistent.num_ground_floor_actions
+        if action_count is None:
+            action_count = 0
+
+        if action_count < 3:
+            minutes_clock = str(45 + action_count * 5)
+            while len(minutes_clock) < 2:
+                minutes_clock = '0' + minutes_clock
+            return '5:' + str(45 + action_count * 5)
+        elif action_count < 15:
+            minutes_clock = str((action_count - 3) * 5)
+            while len(minutes_clock) < 2:
+                minutes_clock = '0' + minutes_clock
+            return '6:' + str((action_count - 3) * 5)
+        else:
+            return '7:00'
+
+    def ground_floor_action_taken():
+        pass
 # The game starts here.
 
 label start:
+    define self = Character(currentuser, color="#c8c8ff")
+
     image babyroom = im.Scale("bg babyroom.png", 1920, 1080)
     image bg attic = im.Scale("bg attic.png", 1920, 1080)
     image attic_curtains = im.Scale("attic curtains.png", 1920, 1080)
@@ -128,13 +147,7 @@ label start:
     image poop = im.FactorScale("poop.png", 1, 1)
     image dog2 = im.FactorScale("dog2.png", 1, 1)
     image ending door = im.FactorScale("ending door.png", 0.5)
-    # Show a background. This uses a placeholder by default, but you can
-    # add a file (named either "bg room.png" or "bg room.jpg") to the
-    # images directory to show it.
 
-    # This shows a character sprite. A placeholder is used, but you can
-    # replace it by adding a file named "eileen happy.png" to the images
-    # directory.``
     image caught = "caught.png"
     image babyroom_food = "babyroom food.png"
     python:
@@ -221,17 +234,14 @@ label start:
             "This house has three storeys. I have to escape from the front door in the living room."
             jump attic
         elif _return == 'attic.photos':
-            show attic_photo at Position(xpos=0.5, ypos=0.5) with dissolve
+            show attic photo 1 at top with dissolve
             "*Investigating the photo frame*"
             "These people. Thinking of them makes me shudder. But this child, he looks very familiar, and is quite cute I must say."
+            show attic photo 2 at top with dissolve
+            "Oh what monsters!"
             jump attic
         elif _return == 'attic.blanket':
-            menu:
-                "Go downstairs?"
-                "Yes":
-                    jump hallway
-                "No":
-                    jump attic
+            jump hallway
         elif _return == 'attic.dogroom':
             jump dogroom
         elif _return == 'attic.balcony':
@@ -295,7 +305,9 @@ label start:
     label stairs:
         $ action_taken()
         $ persistent.stairs_entered = True
-        if persistent.dog_room_toy_examined:
+        if persistent.hallway_ground_entered:
+            jump hallway_ground
+        elif persistent.dog_room_toy_examined:
             scene bg stairs with fade
             menu:
                 "Head down?"
@@ -306,6 +318,7 @@ label start:
         else:
             scene bg stairs dog with fade
             "*Peering down the staircase*"
+            play sound 'audio/dog snoring.ogg'
             "It’s the monster again. Its beady eyes and saggy skin creeps me out."
             "I remember the last time he hurt me. There must be a way to get around him…"
             jump hallway
@@ -357,10 +370,10 @@ label start:
         elif _return == 'toilet.rat':
             play sound "audio/rat squeaking.ogg"
             rat "Hello [currentuser]. The name’s Russell. And I have terrible news for you: You NEED to get out of here!"
-            "Huh? You have the guts to come out here in the open in front of me."
+            self "Huh? You have the guts to come out here in the open in front of me."
             play sound "audio/rat squeaking.ogg"
             rat "They are out to get you. You MUST leave."
-            "And why would I trust YOU of all animals?"
+            self "And why would I trust YOU of all animals?"
             play sound "audio/rat squeaking.ogg"
             rat "Please just trust me. I need to hide now. Good luck pal!"
             "What was that about? He doesn’t seem evil. Maybe I should take his advice..."
@@ -632,7 +645,7 @@ label start:
         elif _return == "hallway_ground.rat":
             if not persistent.is_rat_dead and persistent.knows_rat:
                 "It’s that rat from before… isn’t he supposed to be hiding? Let’s go ask him."
-                "Psst! Hey Russell! What are you doing here? Aren’t you supposed to be hiding?"
+                self "Psst! Hey Russell! What are you doing here? Aren’t you supposed to be hiding?"
                 rat "Shhh! I got hungry so I came out. What are you still doing here? Get out of here NOW!"
                 play sound "audio/fast footsteps.mp3"
                 "Wait. What was that?"
@@ -646,7 +659,7 @@ label start:
                 return
             elif not persistent.is_rat_dead and not persistent.knows_rat:
                 "It’s that rat from before… isn’t he supposed to be hiding? Let’s go ask him."
-                "Psst! Hey hey!"
+                self "Psst! Hey hey!"
                 rat "Shhh! Are you trying to get me killed? Who are you anyway?"
                 play sound "audio/fast footsteps.mp3"
                 "I just wanna ask how can I… oh no..."
@@ -664,6 +677,12 @@ label start:
                 "..."
                 "Ohno, he's cold and not moving..."
                 jump hallway_ground
+        elif _return == 'hallway_ground.clock':
+            $ clock_time_to_show = get_in_game_clock_time()
+            "It is currently [clock_time_to_show]. Something's going to happen soon, I can feel it."
+            if not (persistent.num_ground_floor_actions is None) and persistent.num_ground_floor_actions > 0 and persistent.num_ground_floor_actions < 15:
+                $ persistent.num_ground_floor_actions -= 1
+            jump hallway_ground
 
     label dining_room:
         $ ground_floor_action_taken()
@@ -893,7 +912,7 @@ label start:
         "YOU GOT CAUGHT!"
         "Not so simple right? Try again."
         $ persistent.num_caught += 1
-        return
+        $ MainMenu(confirm=False)()
     # This ends the game.
 
     return

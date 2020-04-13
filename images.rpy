@@ -49,5 +49,6 @@ define hallway_ground_door_2_image = im.FactorScale('hallway_ground_door_2.png',
 define hallway_ground_door_3_image = im.FactorScale('hallway_ground_door_3.png', 2.65)
 define hallway_ground_live_rat_image = im.FactorScale("live rat.png", 0.5)
 define hallway_ground_dead_rat_image = im.FactorScale("deadrat.png", 0.4)
+define hallway_ground_clock_image = im.FactorScale("clock.png", 0.2)
 
 define ending_door_image = im.FactorScale("ending door.png", 0.5)

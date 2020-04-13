@@ -383,8 +383,8 @@ screen main_menu():
             text "[game_name!t]":
                 style "main_menu_title"
 
-            text "[config.version]":
-                style "main_menu_version"
+            # text "[config.version]":
+            #     style "main_menu_version"
 
 
 style main_menu_frame is empty
@@ -400,10 +400,10 @@ style main_menu_frame:
     background "gui/overlay/main_menu.png"
 
 style main_menu_vbox:
-    xalign 1.0
+    xalign 0.5
     xoffset -30
     xmaximum 1200
-    yalign 1.0
+    yalign 0.4
     yoffset -30
 
 style main_menu_text:
@@ -1943,6 +1943,13 @@ screen hallway_ground_options(is_kitchen_label_visible=False,
         hovered mtt.TextAction("2nd Floor")
         action Return('hallway_ground.hallway')
         xpos 100 ypos 850
+    imagebutton:
+        idle im.Alpha(hallway_ground_clock_image, 0.8)
+        hover hallway_ground_clock_image
+        hovered mtt.TextAction("Check Time")
+        action Return('hallway_ground.clock')
+        focus_mask True
+        xpos 1100 ypos 0
     if is_rat_dead:
         imagebutton:
             idle im.Alpha(hallway_ground_dead_rat_image, 0.8)
